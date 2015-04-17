@@ -39,8 +39,8 @@ def parse_date(dataList):
                 print(date, streets)
 
                 for street in streets:
-                        result = overpy.helper.get_street(api, street,
-                                                          "3600062594")
+                        result = overpy.helper.get_street(street,
+                                                          "3600062594", api)
                         print("\t", street, result.get_ways())
 
                         coordinates = []
@@ -76,7 +76,7 @@ for f in os.listdir(path):
         print("current file is:", filepath)
 
         # skip files with existing results
-        if os._exists(filepath.replace('json', 'geojson')):
+        if os.path.exists(filepath.replace('json', 'geojson')):
                 continue
 
         with open(filepath, "r") as fh:
