@@ -41,7 +41,6 @@ def parse_date(dataList):
                 for street in streets:
                         result = overpy.helper.get_street(street,
                                                           "3600062594", api)
-                        print("\t", street, result.get_ways())
 
                         coordinates = []
                         for way in result.get_ways():
@@ -52,6 +51,7 @@ def parse_date(dataList):
                                         print("insufficient way nodes", way)
 
                         if coordinates == []:
+                                print("coordinates empty for", street)
                                 continue
 
                         geojson["features"].append({
@@ -72,6 +72,9 @@ path = "results/"
 api = overpy.Overpass()
 
 for f in os.listdir(path):
+        if f[-8:] == '.geojson':
+                continue
+
         filepath = os.path.join(path, f)
         print("current file is:", filepath)
 
