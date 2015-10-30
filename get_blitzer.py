@@ -34,7 +34,23 @@ for url in urls:
     tree = etree.parse(BytesIO(data), parser)
 
     regex_date = re.compile("^\w+, (?P<day>\d+)\.(?P<month>\d+)(\.(?P<year>\d+))?")
+    regex_date2 = re.compile("^(?P<day>\d+)\. (?P<month>\w+) ((?P<year>\d+))?")
     regex_street = re.compile("^\w+")
+
+    months = {
+        "Januar": 1,
+        "Februar": 2,
+        "März": 3,
+        "April": 4,
+        "Mai": 5,
+        "Juni": 6,
+        "Juli": 7,
+        "August": 8,
+        "September": 9,
+        "Oktober": 10,
+        "November": 11,
+        "Dezember": 12
+    }
 
     cur_date = None
     cur_ym = None
@@ -63,6 +79,32 @@ for url in urls:
                 cur_date = s
                 cur_ym = ym
                 continue
+
+            m = regex_date2.match(elem2)
+            if m:
+                month = m.group("month")
+                month = months[month]
+                year = m.group("year")
+                if year is None:
+                    url_parts = url["url"].rsplit("/", 2)
+                    if len(url_parts) > 2:
+                        year = url_parts[1]
+                        if int(month) == 1:
+                            year = int(year) + 1
+
+                s = "%s-%s-%s" % (year, month, m.group("day"))
+                ym = "%s-%s" % (year, month)
+                if ym not in result:
+                    result[ym] = {
+                        "url": url["url"],
+                        "results": {},
+                    }
+                if s not in result[ym]["results"]:
+                    result[ym]["results"][s] = []
+                cur_date = s
+                cur_ym = ym
+                continue
+
 
             m = regex_street.match(elem2)
             if m:
